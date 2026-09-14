@@ -1,0 +1,203 @@
+{
+  "name": "Nordic Frost Modern FinTech",
+  "dataColors": [
+    "#4338CA",
+    "#0D9488",
+    "#D97706",
+    "#7C3AED",
+    "#E11D48",
+    "#0284C7",
+    "#64748B",
+    "#EA580C"
+  ],
+  "background": "#F1F5F9",
+  "foreground": "#1E1B4B",
+  "tableAccent": "#4338CA",
+  "good": "#0D9488",
+  "neutral": "#64748B",
+  "bad": "#E11D48",
+  "maximum": "#0D9488",
+  "center": "#D97706",
+  "minimum": "#E11D48",
+  "null": "#CBD5E1",
+  "textClasses": {
+    "callout": {
+      "fontSize": 20,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#1E1B4B"
+    },
+    "title": {
+      "fontSize": 12,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#1E1B4B"
+    },
+    "header": {
+      "fontSize": 11,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#312E81"
+    },
+    "label": {
+      "fontSize": 10,
+      "fontFace": "Segoe UI",
+      "color": "#64748B"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#FFFFFF" } },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#CBD5E1" } },
+            "radius": 10
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#94A3B8" } },
+            "position": "Outer",
+            "preset": "BottomRight"
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "fontColor": { "solid": { "color": "#1E1B4B" } },
+            "fontSize": 11,
+            "fontFamily": "Segoe UI Semibold"
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": { "solid": { "color": "#F1F5F9" } },
+            "transparency": 0
+          }
+        ]
+      }
+    },
+    "card": {
+      "*": {
+        "cardTitle": [
+          {
+            "color": { "solid": { "color": "#64748B" } },
+            "fontSize": 10,
+            "fontFamily": "Segoe UI"
+          }
+        ],
+        "labels": [
+          {
+            "color": { "solid": { "color": "#1E1B4B" } },
+            "fontSize": 20,
+            "fontFamily": "Segoe UI Bold"
+          }
+        ],
+        "background": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#FFFFFF" } },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#CBD5E1" } },
+            "radius": 10
+          }
+        ]
+      }
+    },
+    "lineChart": {
+      "*": {
+        "legend": [
+          {
+            "show": true,
+            "position": "Top",
+            "fontFamily": "Segoe UI",
+            "fontSize": 9
+          }
+        ],
+        "categoryAxis": [
+          {
+            "show": true,
+            "labelColor": { "solid": { "color": "#64748B" } },
+            "fontSize": 9
+          }
+        ],
+        "valueAxis": [
+          {
+            "show": true,
+            "labelColor": { "solid": { "color": "#64748B" } },
+            "fontSize": 9
+          }
+        ]
+      }
+    },
+    "tableEx": {
+      "*": {
+        "grid": [
+          {
+            "gridVertical": false,
+            "gridHorizontal": true,
+            "gridHorizontalColor": { "solid": { "color": "#E2E8F0" } },
+            "gridHorizontalWeight": 1,
+            "rowPadding": 11
+          }
+        ],
+        "columnHeaders": [
+          {
+            "fontColor": { "solid": { "color": "#1E1B4B" } },
+            "backColor": { "solid": { "color": "#EEF2FF" } },
+            "fontFamily": "Segoe UI Semibold",
+            "fontSize": 11
+          }
+        ],
+        "values": [
+          {
+            "fontColorPrimary": { "solid": { "color": "#1E293B" } },
+            "backColorPrimary": { "solid": { "color": "#FFFFFF" } },
+            "fontColorSecondary": { "solid": { "color": "#1E293B" } },
+            "backColorSecondary": { "solid": { "color": "#F8FAFC" } },
+            "fontSize": 10.5,
+            "fontFamily": "Segoe UI"
+          }
+        ]
+      }
+    },
+    "slicer": {
+      "*": {
+        "header": [
+          {
+            "fontColor": { "solid": { "color": "#1E1B4B" } },
+            "fontSize": 10,
+            "fontFamily": "Segoe UI Semibold"
+          }
+        ],
+        "items": [
+          {
+            "fontColor": { "solid": { "color": "#1E293B" } },
+            "background": { "solid": { "color": "#FFFFFF" } },
+            "fontSize": 10
+          }
+        ],
+        "slider": [
+          {
+            "color": { "solid": { "color": "#4338CA" } }
+          }
+        ]
+      }
+    }
+  }
+}

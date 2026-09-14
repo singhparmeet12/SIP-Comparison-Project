@@ -1,0 +1,25 @@
+Ticker,Display_Code,Company_Name,Category,Asset_Type,Listing_Date,Latest_Date,Total_Trading_Days,Available_Years
+ASIANPAINT.NS,ASIANPAINT,Asian Paints,Growth / Compounder,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+BAJFINANCE.NS,BAJFINANCE,Bajaj Finance,Growth / Compounder,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+ETERNAL.NS,ETERNAL,Zomato (Eternal Ltd),Retail Hype / Turnaround,Equity Stock,2021-07-23,2026-09-11,1274,5.1
+HDFCBANK.NS,HDFCBANK,HDFC Bank,Bluechip Heavyweight,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+ICICIBANK.NS,ICICIBANK,ICICI Bank,Bluechip Heavyweight,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+IDEA.NS,IDEA,Vodafone Idea,Retail Hype / Turnaround,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+INFY.NS,INFY,Infosys,Bluechip Heavyweight,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+IRCTC.NS,IRCTC,IRCTC,Retail Hype / Turnaround,Equity Stock,2019-10-14,2026-09-11,1716,6.9
+ITC.NS,ITC,ITC Ltd,Bluechip Heavyweight,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+LT.NS,LT,Larsen & Toubro,Bluechip Heavyweight,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+M&M.NS,M&M,Mahindra & Mahindra,Auto & Turnaround Giant,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+MARUTI.NS,MARUTI,Maruti Suzuki,Auto & Turnaround Giant,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+NIFTYBEES.NS,NIFTYBEES,Nippon India ETF Nifty BeES,Benchmark Index,Benchmark ETF (TRI Proxy),2010-01-04,2026-09-11,4123,16.6
+RELIANCE.NS,RELIANCE,Reliance Industries,Bluechip Heavyweight,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+SBIN.NS,SBIN,State Bank of India,Bluechip Heavyweight,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+SUZLON.NS,SUZLON,Suzlon Energy,Retail Hype / Turnaround,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+TATAPOWER.NS,TATAPOWER,Tata Power,Retail Hype / Turnaround,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+TCS.NS,TCS,Tata Consultancy Services,Bluechip Heavyweight,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+TITAN.NS,TITAN,Titan Company,Growth / Compounder,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+TMCV.NS,TMCV,Tata Motors Ltd (CV),Retail Hype / Turnaround,Equity Stock,2025-11-12,2026-09-11,211,0.9
+TMPV.NS,TMPV,Tata Motors Pass Vehicles,Retail Hype / Turnaround,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+TRENT.NS,TRENT,Trent Ltd,Growth / Compounder,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+YESBANK.NS,YESBANK,Yes Bank,Retail Hype / Turnaround,Equity Stock,2010-01-04,2026-09-11,4125,16.6
+^NSEI,NSEI,Nifty 50 Spot Index,Benchmark Index,Spot Index (PR),2010-01-04,2026-09-11,4101,16.5

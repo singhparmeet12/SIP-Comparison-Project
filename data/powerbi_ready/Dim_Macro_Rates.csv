@@ -1,0 +1,4 @@
+Indicator,Value_Pct,Description
+Risk_Free_Rate_10Y_GSec,7.0,10-Year Indian Government Securities Benchmark Yield
+Long_Term_India_CPI_Inflation,5.5,Average CPI Inflation Baseline over 2010-2026
+Equity_Risk_Premium,6.5,Expected long-term excess return of Indian equities over risk-free rate

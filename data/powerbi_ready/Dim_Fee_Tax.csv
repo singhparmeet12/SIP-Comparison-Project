@@ -1,0 +1,10 @@
+Fee_Category,Parameter_Name,Value,Unit,Regime,Notes
+Brokerage,Brokerage_Per_Order,20.0,Flat_INR,Modern Discount,"Flat fee per buy/sell order (Zerodha, Groww)"
+Statutory,STT_Buy,0.001,Percentage,Mandatory,0.1% Securities Transaction Tax on Buy
+Statutory,STT_Sell,0.001,Percentage,Mandatory,0.1% Securities Transaction Tax on Sell
+Statutory,Stamp_Duty,0.00015,Percentage,Mandatory,0.015% State Stamp Duty on purchase
+Exchange,Exchange_Turnover_Charge,3.45e-05,Percentage,NSE,NSE turnover fee
+Tax,GST_Rate,0.18,Percentage,Government,18% GST on brokerage + exchange charges
+Tax,STCG_Tax_Rate,0.2,Percentage,Post-Budget 2024,20% tax on gains held under 12 months
+Tax,LTCG_Tax_Rate,0.125,Percentage,Post-Budget 2024,12.5% tax on gains held over 12 months
+Tax,LTCG_Annual_Exemption,125000.0,INR,Annual,First ₹1.25 Lakh LTCG gain per fiscal year is tax-free

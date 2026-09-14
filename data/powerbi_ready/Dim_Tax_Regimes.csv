@@ -1,0 +1,4 @@
+Regime_Name,Start_Date,End_Date,LTCG_Rate_Pct,LTCG_Exemption_INR,STCG_Rate_Pct,Brokerage_Norm,Key_Tax_Clause
+Pre-Budget 2018 (Tax-Free Era),2010-01-01,2018-01-31,0.0,0,15.0,0.30% - 0.50% (Legacy Full Service),Section 10(38) Exemption (0% Long Term Tax)
+Budget 2018 to July 2024,2018-02-01,2024-07-22,10.0,100000,15.0,Flat INR 20 / Zero Delivery (Discount Era),Reintroduction of LTCG with INR 1 Lakh exemption
+Post-Budget July 2024 (Modern Regime),2024-07-23,2026-12-31,12.5,125000,20.0,Flat INR 20 per trade,Revised higher rates for both STCG & LTCG

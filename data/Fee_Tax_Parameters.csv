@@ -1,0 +1,10 @@
+Parameter,Rate,Unit,Description
+Brokerage_Delivery,20.0,Flat_INR,Discount broker flat charge per order (Zerodha/Groww)
+STT_Delivery_Buy,0.001,Percentage,0.1% Securities Transaction Tax on Buy
+STT_Delivery_Sell,0.001,Percentage,0.1% Securities Transaction Tax on Sell
+Stamp_Duty_Buy,0.00015,Percentage,0.015% State stamp duty on purchase
+Exchange_Turnover_Charges,3.45e-05,Percentage,NSE transaction charge
+GST_Rate,0.18,Percentage,18% GST applicable on (Brokerage + Exchange Fees)
+STCG_Tax_Rate,0.2,Percentage,20% Short-Term Capital Gains tax (< 1 year holding)
+LTCG_Tax_Rate,0.125,Percentage,12.5% Long-Term Capital Gains tax (>= 1 year holding)
+LTCG_Exemption_Limit,125000.0,INR,Annual LTCG exemption up to ₹1.25 Lakh

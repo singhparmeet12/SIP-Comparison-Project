@@ -1,0 +1,7 @@
+Metric,XIRR_Pct,Final_Value,Capital_Multiple,Category
+Worst Random 5-Stock Portfolio,3.5,2716429.11,1.35,Active Distribution
+25th Percentile Portfolio,13.28,6796520.28,3.38,Active Distribution
+Median Active Stock Portfolio,17.08,9895977.36,4.92,Active Distribution
+75th Percentile Portfolio,24.85,21635219.5,10.76,Active Distribution
+Best Random 5-Stock Portfolio,28.93,32714313.42,16.28,Active Distribution
+Benchmark: NIFTYBEES (Passive ETF),11.17,5533353.85,2.75,Benchmark
