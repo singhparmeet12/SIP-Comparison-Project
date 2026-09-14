@@ -761,8 +761,9 @@ with tab_data:
     </div>
     """, unsafe_allow_html=True)
     
+    display_cols = [c for c in ["Ticker", "Display_Code", "Company_Name", "Category", "Listing_Date", "Total_Trading_Days", "Available_Years"] if c in equity_stocks.columns]
     st.dataframe(
-        equity_stocks[["Ticker", "Company_Name", "Sector", "Market_Cap_Category", "NSE_Symbol"]],
+        equity_stocks[display_cols],
         use_container_width=True,
         hide_index=True
     )
