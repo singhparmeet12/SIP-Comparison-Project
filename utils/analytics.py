@@ -10,6 +10,19 @@ def load_data():
     fact_monthly = pd.read_csv(os.path.join(DATA_DIR, "Fact_MonthlySIP_Prices.csv"))
     fact_daily = pd.read_csv(os.path.join(DATA_DIR, "Fact_DailyPrices.csv"))
     
+    # Fail-safe check: Ensure GOLDBEES.NS is merged if missing from the consolidated fact table (stale cache / partial files)
+    if "GOLDBEES.NS" not in fact_monthly["Ticker"].values:
+        gold_m_path = os.path.join(DATA_DIR, "GOLDBEES_MonthlySIP_Prices.csv")
+        if os.path.exists(gold_m_path):
+            gold_m = pd.read_csv(gold_m_path)
+            fact_monthly = pd.concat([fact_monthly, gold_m], ignore_index=True)
+            
+    if "GOLDBEES.NS" not in fact_daily["Ticker"].values:
+        gold_d_path = os.path.join(DATA_DIR, "GOLDBEES_DailyPrices.csv")
+        if os.path.exists(gold_d_path):
+            gold_d = pd.read_csv(gold_d_path)
+            fact_daily = pd.concat([fact_daily, gold_d], ignore_index=True)
+
     fact_monthly["SIP_Date"] = pd.to_datetime(fact_monthly["SIP_Date"])
     fact_daily["Date"] = pd.to_datetime(fact_daily["Date"])
     
@@ -85,6 +98,22 @@ def run_nifty_benchmark(fact_monthly, fact_daily, start_year, monthly_sip):
     ].sort_values("SIP_Date").copy()
     
     total_months = len(nifty_monthly)
+    if total_months == 0:
+        return {
+            "ticker": "NIFTYBEES.NS",
+            "name": "Nifty 50 Benchmark",
+            "total_months": 0,
+            "total_invested": 0.0,
+            "current_val": 0.0,
+            "peak_wealth": 0.0,
+            "peak_date": pd.Timestamp.now(),
+            "current_drop_pct": 0.0,
+            "worst_loss": 0.0,
+            "worst_date": pd.Timestamp.now(),
+            "annual_return": 0.0,
+            "timeline_df": pd.DataFrame(columns=["SIP_Date", "portfolio_val", "cum_invested", "net_pl"])
+        }
+        
     total_invested = total_months * monthly_sip
     
     nifty_monthly["units"] = monthly_sip / nifty_monthly["SIP_Buy_Price"]
@@ -109,7 +138,7 @@ def run_nifty_benchmark(fact_monthly, fact_daily, start_year, monthly_sip):
         latest_price = nifty_monthly["SIP_Buy_Price"].iloc[-1]
         
     current_val_today = nifty_monthly["cum_units"].iloc[-1] * latest_price
-    current_drop_pct = ((current_val_today - peak_wealth) / peak_wealth) * 100.0
+    current_drop_pct = ((current_val_today - peak_wealth) / peak_wealth) * 100.0 if peak_wealth > 0 else 0.0
     
     terminal_date = nifty_daily["Date"].iloc[-1] if len(nifty_daily) > 0 else nifty_monthly["SIP_Date"].iloc[-1]
     annual_return = compute_exact_xirr(nifty_monthly["SIP_Date"].tolist(), monthly_sip, terminal_date, current_val_today)
@@ -131,11 +160,35 @@ def run_nifty_benchmark(fact_monthly, fact_daily, start_year, monthly_sip):
 
 def run_gold_benchmark(fact_monthly, fact_daily, start_year, monthly_sip):
     """Calculate exact SIP metrics for Gold Benchmark (GOLDBEES.NS)."""
+    # Fail-safe check: if GOLDBEES.NS is not in fact_monthly (e.g. stale cache or old DataFrame), load from standalone CSV
+    if "GOLDBEES.NS" not in fact_monthly["Ticker"].values:
+        gold_m_path = os.path.join(DATA_DIR, "GOLDBEES_MonthlySIP_Prices.csv")
+        if os.path.exists(gold_m_path):
+            gold_m = pd.read_csv(gold_m_path)
+            gold_m["SIP_Date"] = pd.to_datetime(gold_m["SIP_Date"])
+            fact_monthly = pd.concat([fact_monthly, gold_m], ignore_index=True)
+
     gold_monthly = fact_monthly[
-        (fact_monthly["Ticker"] == "GOLDBEES.NS") & (fact_monthly["Year"] >= start_year)
+        (fact_monthly["Ticker"].str.strip() == "GOLDBEES.NS") & (fact_monthly["Year"] >= start_year)
     ].sort_values("SIP_Date").copy()
     
     total_months = len(gold_monthly)
+    if total_months == 0:
+        return {
+            "ticker": "GOLDBEES.NS",
+            "name": "Nippon India ETF Gold BeES",
+            "total_months": 0,
+            "total_invested": 0.0,
+            "current_val": 0.0,
+            "peak_wealth": 0.0,
+            "peak_date": pd.Timestamp.now(),
+            "current_drop_pct": 0.0,
+            "worst_loss": 0.0,
+            "worst_date": pd.Timestamp.now(),
+            "annual_return": 0.0,
+            "timeline_df": pd.DataFrame(columns=["SIP_Date", "portfolio_val", "cum_invested", "net_pl"])
+        }
+        
     total_invested = total_months * monthly_sip
     
     gold_monthly["units"] = monthly_sip / gold_monthly["SIP_Buy_Price"]
@@ -153,14 +206,21 @@ def run_gold_benchmark(fact_monthly, fact_daily, start_year, monthly_sip):
     worst_date = gold_monthly.loc[worst_idx, "SIP_Date"]
     
     # Latest daily price
-    gold_daily = fact_daily[fact_daily["Ticker"] == "GOLDBEES.NS"].sort_values("Date")
+    gold_daily = fact_daily[fact_daily["Ticker"].str.strip() == "GOLDBEES.NS"].sort_values("Date")
+    if len(gold_daily) == 0:
+        gold_d_path = os.path.join(DATA_DIR, "GOLDBEES_DailyPrices.csv")
+        if os.path.exists(gold_d_path):
+            gold_daily = pd.read_csv(gold_d_path)
+            gold_daily["Date"] = pd.to_datetime(gold_daily["Date"])
+            gold_daily = gold_daily.sort_values("Date")
+
     if len(gold_daily) > 0:
         latest_price = gold_daily["Adj_Close"].iloc[-1]
     else:
         latest_price = gold_monthly["SIP_Buy_Price"].iloc[-1]
         
     current_val_today = gold_monthly["cum_units"].iloc[-1] * latest_price
-    current_drop_pct = ((current_val_today - peak_wealth) / peak_wealth) * 100.0
+    current_drop_pct = ((current_val_today - peak_wealth) / peak_wealth) * 100.0 if peak_wealth > 0 else 0.0
     
     terminal_date = gold_daily["Date"].iloc[-1] if len(gold_daily) > 0 else gold_monthly["SIP_Date"].iloc[-1]
     annual_return = compute_exact_xirr(gold_monthly["SIP_Date"].tolist(), monthly_sip, terminal_date, current_val_today)
@@ -194,6 +254,22 @@ def run_stock_basket_simulation(fact_monthly, fact_daily, selected_tickers, star
     
     unique_dates = sorted(sub["SIP_Date"].unique())
     total_months = len(unique_dates)
+    if total_months == 0 or len(sub) == 0:
+        return {
+            "tickers": selected_tickers,
+            "num_stocks": num_stocks,
+            "total_months": 0,
+            "total_invested": 0.0,
+            "current_val": 0.0,
+            "peak_wealth": 0.0,
+            "peak_date": pd.Timestamp.now(),
+            "current_drop_pct": 0.0,
+            "worst_loss": 0.0,
+            "worst_date": pd.Timestamp.now(),
+            "annual_return": 0.0,
+            "timeline_df": pd.DataFrame(columns=["SIP_Date", "portfolio_val", "cum_invested", "net_pl"])
+        }
+        
     total_invested = total_months * monthly_sip
     
     timeline = []
@@ -218,7 +294,22 @@ def run_stock_basket_simulation(fact_monthly, fact_daily, selected_tickers, star
         })
         
     tdf = pd.DataFrame(timeline)
-    
+    if len(tdf) == 0:
+        return {
+            "tickers": selected_tickers,
+            "num_stocks": num_stocks,
+            "total_months": 0,
+            "total_invested": 0.0,
+            "current_val": 0.0,
+            "peak_wealth": 0.0,
+            "peak_date": pd.Timestamp.now(),
+            "current_drop_pct": 0.0,
+            "worst_loss": 0.0,
+            "worst_date": pd.Timestamp.now(),
+            "annual_return": 0.0,
+            "timeline_df": pd.DataFrame(columns=["SIP_Date", "portfolio_val", "cum_invested", "net_pl"])
+        }
+        
     peak_wealth = tdf["portfolio_val"].max()
     peak_idx = tdf["portfolio_val"].idxmax()
     peak_date = tdf.loc[peak_idx, "SIP_Date"]
@@ -243,7 +334,7 @@ def run_stock_basket_simulation(fact_monthly, fact_daily, selected_tickers, star
             latest_price = 0.0
         current_val_today += total_units * latest_price
         
-    current_drop_pct = ((current_val_today - peak_wealth) / peak_wealth) * 100.0
+    current_drop_pct = ((current_val_today - peak_wealth) / peak_wealth) * 100.0 if peak_wealth > 0 else 0.0
     terminal_date = fact_daily["Date"].max()
     annual_return = compute_exact_xirr(unique_dates, monthly_sip, terminal_date, current_val_today)
     

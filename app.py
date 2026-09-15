@@ -568,8 +568,8 @@ st.markdown("""
 # ---------------------------------------------------------
 # Load Preprocessed Data
 # ---------------------------------------------------------
-@st.cache_data
-def get_cached_data():
+@st.cache_data(show_spinner=False)
+def get_cached_data(cache_version="2026_09_16_v4_gold_hotfix"):
     return load_data()
 
 dim_asset, fact_monthly, fact_daily = get_cached_data()
