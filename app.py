@@ -153,6 +153,14 @@ st.markdown("""
         margin-bottom: 4px;
     }
 
+    /* KPI Grid Container - Desktop Web View: Exactly 3 Columns */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-bottom: 1.25rem;
+    }
+
     /* KPI Cards */
     .kpi-card {
         background: var(--card-bg);
@@ -445,39 +453,41 @@ st.markdown("""
             line-height: 1.4 !important;
         }
 
-        /* Maintain Grid Structure on Mobile: 3-Card Columns for the KPI Metric Cards */
-        div[data-testid="stHorizontalBlock"]:has(.kpi-card) {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            flex-direction: row !important;
-            gap: 6px !important;
-            margin-bottom: 0.45rem !important;
+        /* Mobile Grid Layout for KPI Cards: Professional 2-Column Symmetrical Grid */
+        .kpi-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 8px !important;
+            margin-bottom: 0.85rem !important;
         }
-        div[data-testid="stHorizontalBlock"]:has(.kpi-card) > div[data-testid="column"] {
-            flex: 1 1 calc(33.333% - 4px) !important;
-            min-width: calc(33.333% - 4px) !important;
-            max-width: calc(33.333% - 4px) !important;
-            width: calc(33.333% - 4px) !important;
-            margin-bottom: 0 !important;
-        }
+        .card-invested    { order: 1; }
+        .card-stocks      { order: 2; }
+        .card-nifty       { order: 3; }
+        .card-alpha-nifty { order: 4; }
+        .card-gold        { order: 5; }
+        .card-alpha-gold  { order: 6; }
+
         .kpi-card {
-            padding: 0.55rem 0.5rem !important;
-            border-radius: 9px !important;
+            padding: 0.65rem 0.75rem !important;
+            border-radius: 10px !important;
+            min-height: 84px !important;
         }
         .kpi-label {
-            font-size: 0.60rem !important;
-            margin-bottom: 0.15rem !important;
-            line-height: 1.15 !important;
+            font-size: 0.62rem !important;
+            margin-bottom: 0.2rem !important;
+            line-height: 1.2 !important;
+            letter-spacing: 0.02em !important;
         }
         .kpi-value {
-            font-size: 1.05rem !important;
+            font-size: 1.25rem !important;
             letter-spacing: -0.02em !important;
             line-height: 1.15 !important;
         }
         .kpi-sub {
-            font-size: 0.58rem !important;
-            padding: 1px 4px !important;
-            margin-top: 0.2rem !important;
+            font-size: 0.62rem !important;
+            padding: 2px 6px !important;
+            margin-top: 0.25rem !important;
+            white-space: nowrap !important;
         }
 
         /* Chart & Panel Box Mobile */
@@ -633,116 +643,85 @@ with tab_sim:
     </div>
     """, unsafe_allow_html=True)
 
-    # Row 1: The Benchmarks & Total Invested
-    r1_col1, r1_col2, r1_col3 = st.columns(3)
+    # KPI Grid: Benchmarks, Portfolio Value, and Alpha Differentials
+    nifty_ret_fmt = format_pct(nifty_sim["annual_return"])
+    gold_ret_fmt = format_pct(gold_sim["annual_return"])
     
-    with r1_col1:
-        st.markdown(f"""
-        <div class="kpi-card">
+    if stock_sim is not None:
+        stock_val_fmt = format_currency_inr(stock_sim["current_val"])
+        stock_ret_fmt = format_pct(stock_sim["annual_return"])
+        stock_color = "var(--accent-green)" if stock_sim["current_val"] >= nifty_sim["current_val"] else "#1E293B"
+        stock_badge = "badge-green" if stock_sim["current_val"] >= nifty_sim["current_val"] else "badge-navy"
+        
+        alpha_nft_inr = stock_sim["current_val"] - nifty_sim["current_val"]
+        alpha_nft_pct = stock_sim["annual_return"] - nifty_sim["annual_return"]
+        if alpha_nft_inr >= 0:
+            alpha_nft_val_fmt = f"+{format_currency_inr(alpha_nft_inr)}"
+            alpha_nft_badge = "badge-green"
+            alpha_nft_arrow = "▲"
+        else:
+            alpha_nft_val_fmt = f"-{format_currency_inr(abs(alpha_nft_inr))}"
+            alpha_nft_badge = "badge-red"
+            alpha_nft_arrow = "▼"
+        alpha_nft_sub = f"{alpha_nft_arrow} {format_pct(abs(alpha_nft_pct))} vs Nifty"
+        
+        alpha_gold_inr = stock_sim["current_val"] - gold_sim["current_val"]
+        alpha_gold_pct = stock_sim["annual_return"] - gold_sim["annual_return"]
+        if alpha_gold_inr >= 0:
+            alpha_gold_val_fmt = f"+{format_currency_inr(alpha_gold_inr)}"
+            alpha_gold_badge = "badge-green"
+            alpha_gold_arrow = "▲"
+        else:
+            alpha_gold_val_fmt = f"-{format_currency_inr(abs(alpha_gold_inr))}"
+            alpha_gold_badge = "badge-red"
+            alpha_gold_arrow = "▼"
+        alpha_gold_sub = f"{alpha_gold_arrow} {format_pct(abs(alpha_gold_pct))} vs Gold"
+    else:
+        stock_val_fmt = "--"
+        stock_ret_fmt = "--"
+        stock_color = "#94A3B8"
+        stock_badge = "badge-navy"
+        alpha_nft_val_fmt = "--"
+        alpha_nft_badge = "badge-navy"
+        alpha_nft_sub = "Select stock to compare"
+        alpha_gold_val_fmt = "--"
+        alpha_gold_badge = "badge-navy"
+        alpha_gold_sub = "Select stock to compare"
+
+    st.markdown(f"""
+    <div class="kpi-grid">
+        <div class="kpi-card card-invested">
             <div class="kpi-label">Total Capital Invested</div>
             <div class="kpi-value">{format_currency_inr(total_invested_val)}</div>
             <div class="kpi-sub badge-navy">{total_months} Monthly SIPs</div>
         </div>
-        """, unsafe_allow_html=True)
-
-    with r1_col2:
-        nifty_ret_fmt = format_pct(nifty_sim["annual_return"])
-        st.markdown(f"""
-        <div class="kpi-card">
+        <div class="kpi-card card-nifty">
             <div class="kpi-label">Nifty 50 Benchmark</div>
             <div class="kpi-value" style="color: var(--accent-blue);">{format_currency_inr(nifty_sim["current_val"])}</div>
             <div class="kpi-sub badge-blue">{nifty_ret_fmt} / yr (XIRR)</div>
         </div>
-        """, unsafe_allow_html=True)
-
-    with r1_col3:
-        gold_ret_fmt = format_pct(gold_sim["annual_return"])
-        st.markdown(f"""
-        <div class="kpi-card">
+        <div class="kpi-card card-gold">
             <div class="kpi-label">Gold BeES Benchmark</div>
             <div class="kpi-value" style="color: var(--accent-gold);">{format_currency_inr(gold_sim["current_val"])}</div>
             <div class="kpi-sub badge-gold">{gold_ret_fmt} / yr (XIRR)</div>
         </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<div style='height: 0.6rem;'></div>", unsafe_allow_html=True)
-
-    # Row 2: Selected Stocks & Relative Gains
-    r2_col1, r2_col2, r2_col3 = st.columns(3)
-
-    with r2_col1:
-        if stock_sim is not None:
-            stock_val_fmt = format_currency_inr(stock_sim["current_val"])
-            stock_ret_fmt = format_pct(stock_sim["annual_return"])
-            stock_color = "var(--accent-green)" if stock_sim["current_val"] >= nifty_sim["current_val"] else "#1E293B"
-            stock_badge = "badge-green" if stock_sim["current_val"] >= nifty_sim["current_val"] else "badge-navy"
-        else:
-            stock_val_fmt = "--"
-            stock_ret_fmt = "--"
-            stock_color = "#94A3B8"
-            stock_badge = "badge-navy"
-            
-        st.markdown(f"""
-        <div class="kpi-card">
+        <div class="kpi-card card-stocks">
             <div class="kpi-label">Selected Stocks Value</div>
             <div class="kpi-value" style="color: {stock_color};">{stock_val_fmt}</div>
             <div class="kpi-sub {stock_badge}">{stock_ret_fmt} / yr (XIRR)</div>
         </div>
-        """, unsafe_allow_html=True)
-
-    with r2_col2:
-        if stock_sim is not None:
-            alpha_nft_inr = stock_sim["current_val"] - nifty_sim["current_val"]
-            alpha_nft_pct = stock_sim["annual_return"] - nifty_sim["annual_return"]
-            if alpha_nft_inr >= 0:
-                alpha_nft_val_fmt = f"+{format_currency_inr(alpha_nft_inr)}"
-                alpha_nft_badge = "badge-green"
-                alpha_nft_arrow = "▲"
-            else:
-                alpha_nft_val_fmt = f"-{format_currency_inr(abs(alpha_nft_inr))}"
-                alpha_nft_badge = "badge-red"
-                alpha_nft_arrow = "▼"
-            alpha_nft_sub = f"{alpha_nft_arrow} {format_pct(abs(alpha_nft_pct))} vs Nifty"
-        else:
-            alpha_nft_val_fmt = "--"
-            alpha_nft_badge = "badge-navy"
-            alpha_nft_sub = "Select stock to compare"
-            
-        st.markdown(f"""
-        <div class="kpi-card">
+        <div class="kpi-card card-alpha-nifty">
             <div class="kpi-label">Stock Gain / Loss vs Nifty</div>
             <div class="kpi-value">{alpha_nft_val_fmt}</div>
             <div class="kpi-sub {alpha_nft_badge}">{alpha_nft_sub}</div>
         </div>
-        """, unsafe_allow_html=True)
-
-    with r2_col3:
-        if stock_sim is not None:
-            alpha_gold_inr = stock_sim["current_val"] - gold_sim["current_val"]
-            alpha_gold_pct = stock_sim["annual_return"] - gold_sim["annual_return"]
-            if alpha_gold_inr >= 0:
-                alpha_gold_val_fmt = f"+{format_currency_inr(alpha_gold_inr)}"
-                alpha_gold_badge = "badge-green"
-                alpha_gold_arrow = "▲"
-            else:
-                alpha_gold_val_fmt = f"-{format_currency_inr(abs(alpha_gold_inr))}"
-                alpha_gold_badge = "badge-red"
-                alpha_gold_arrow = "▼"
-            alpha_gold_sub = f"{alpha_gold_arrow} {format_pct(abs(alpha_gold_pct))} vs Gold"
-        else:
-            alpha_gold_val_fmt = "--"
-            alpha_gold_badge = "badge-navy"
-            alpha_gold_sub = "Select stock to compare"
-            
-        st.markdown(f"""
-        <div class="kpi-card">
+        <div class="kpi-card card-alpha-gold">
             <div class="kpi-label">Stock Gain / Loss vs Gold</div>
             <div class="kpi-value">{alpha_gold_val_fmt}</div>
             <div class="kpi-sub {alpha_gold_badge}">{alpha_gold_sub}</div>
         </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
+    </div>
+    """, unsafe_allow_html=True)
 
     # Middle Row: Line Chart (Left 65%) + Journey Risk/Return Deep Dive (Right 35%)
     chart_col, table_col = st.columns([1.75, 1.25])
