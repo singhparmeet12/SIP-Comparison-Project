@@ -1,16 +1,48 @@
 import os
+import sys
+
+# Ensure repository root and utils directory are in sys.path for robust Streamlit Community Cloud execution
+REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+
+UTILS_DIR = os.path.join(REPO_ROOT, "utils")
+if UTILS_DIR not in sys.path:
+    sys.path.insert(0, UTILS_DIR)
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
-from utils.analytics import (
-    load_data,
-    run_nifty_benchmark,
-    run_gold_benchmark,
-    run_stock_basket_simulation,
-    format_currency_inr,
-    format_pct
-)
+
+try:
+    from utils.analytics import (
+        load_data,
+        run_nifty_benchmark,
+        run_gold_benchmark,
+        run_stock_basket_simulation,
+        format_currency_inr,
+        format_pct
+    )
+except (ImportError, ModuleNotFoundError):
+    try:
+        from utils import (
+            load_data,
+            run_nifty_benchmark,
+            run_gold_benchmark,
+            run_stock_basket_simulation,
+            format_currency_inr,
+            format_pct
+        )
+    except (ImportError, ModuleNotFoundError):
+        from analytics import (
+            load_data,
+            run_nifty_benchmark,
+            run_gold_benchmark,
+            run_stock_basket_simulation,
+            format_currency_inr,
+            format_pct
+        )
 
 # ---------------------------------------------------------
 # Page Configuration
