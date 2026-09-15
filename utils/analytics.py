@@ -15,6 +15,49 @@ def load_data():
     
     return dim_asset, fact_monthly, fact_daily
 
+def compute_exact_xirr(sip_dates, monthly_sip, terminal_date, terminal_val):
+    """Compute exact annualized XIRR using bisection search on dated cash flows."""
+    if len(sip_dates) == 0 or monthly_sip <= 0 or terminal_val is None:
+        return 0.0
+        
+    d0 = pd.to_datetime(sip_dates[0])
+    years = [(pd.to_datetime(d) - d0).days / 365.25 for d in sip_dates]
+    cfs = [-float(monthly_sip)] * len(sip_dates)
+    
+    t_end = (pd.to_datetime(terminal_date) - d0).days / 365.25
+    years.append(t_end)
+    cfs.append(float(terminal_val))
+    
+    years = np.array(years)
+    cfs = np.array(cfs)
+    
+    def npv(r):
+        if r <= -0.9999:
+            return 1e12
+        return np.sum(cfs / ((1.0 + r) ** years))
+    
+    low, high = -0.999, 10.0
+    f_low, f_high = npv(low), npv(high)
+    if f_low * f_high > 0:
+        high = 50.0
+        f_high = npv(high)
+        if f_low * f_high > 0:
+            eff_years = (len(sip_dates) / 12.0) / 2.0
+            return ((terminal_val / (len(sip_dates) * monthly_sip)) ** (1.0 / eff_years) - 1.0) * 100.0 if eff_years > 0 else 0.0
+            
+    for _ in range(150):
+        mid = (low + high) / 2.0
+        f_mid = npv(mid)
+        if abs(f_mid) < 1e-4 or (high - low) < 1e-6:
+            return mid * 100.0
+        if f_low * f_mid < 0:
+            high = mid
+            f_high = f_mid
+        else:
+            low = mid
+            f_low = f_mid
+    return mid * 100.0
+
 def format_currency_inr(amount_in_rupees, include_symbol=True):
     """Format rupee values cleanly into Lakhs or Crores."""
     if pd.isna(amount_in_rupees) or amount_in_rupees is None:
@@ -68,9 +111,8 @@ def run_nifty_benchmark(fact_monthly, fact_daily, start_year, monthly_sip):
     current_val_today = nifty_monthly["cum_units"].iloc[-1] * latest_price
     current_drop_pct = ((current_val_today - peak_wealth) / peak_wealth) * 100.0
     
-    # Annualized XIRR approximation
-    eff_years = (total_months / 12.0) / 2.0
-    annual_return = ((current_val_today / total_invested) ** (1.0 / eff_years) - 1.0) * 100.0
+    terminal_date = nifty_daily["Date"].iloc[-1] if len(nifty_daily) > 0 else nifty_monthly["SIP_Date"].iloc[-1]
+    annual_return = compute_exact_xirr(nifty_monthly["SIP_Date"].tolist(), monthly_sip, terminal_date, current_val_today)
     
     return {
         "ticker": "NIFTYBEES.NS",
@@ -85,6 +127,57 @@ def run_nifty_benchmark(fact_monthly, fact_daily, start_year, monthly_sip):
         "worst_date": worst_date,
         "annual_return": annual_return,
         "timeline_df": nifty_monthly[["SIP_Date", "portfolio_val", "cum_invested", "net_pl"]]
+    }
+
+def run_gold_benchmark(fact_monthly, fact_daily, start_year, monthly_sip):
+    """Calculate exact SIP metrics for Gold Benchmark (GOLDBEES.NS)."""
+    gold_monthly = fact_monthly[
+        (fact_monthly["Ticker"] == "GOLDBEES.NS") & (fact_monthly["Year"] >= start_year)
+    ].sort_values("SIP_Date").copy()
+    
+    total_months = len(gold_monthly)
+    total_invested = total_months * monthly_sip
+    
+    gold_monthly["units"] = monthly_sip / gold_monthly["SIP_Buy_Price"]
+    gold_monthly["cum_units"] = gold_monthly["units"].cumsum()
+    gold_monthly["cum_invested"] = (np.arange(total_months) + 1) * monthly_sip
+    gold_monthly["portfolio_val"] = gold_monthly["cum_units"] * gold_monthly["SIP_Buy_Price"]
+    gold_monthly["net_pl"] = gold_monthly["portfolio_val"] - gold_monthly["cum_invested"]
+    
+    peak_wealth = gold_monthly["portfolio_val"].max()
+    peak_idx = gold_monthly["portfolio_val"].idxmax()
+    peak_date = gold_monthly.loc[peak_idx, "SIP_Date"]
+    
+    worst_loss = gold_monthly["net_pl"].min()
+    worst_idx = gold_monthly["net_pl"].idxmin()
+    worst_date = gold_monthly.loc[worst_idx, "SIP_Date"]
+    
+    # Latest daily price
+    gold_daily = fact_daily[fact_daily["Ticker"] == "GOLDBEES.NS"].sort_values("Date")
+    if len(gold_daily) > 0:
+        latest_price = gold_daily["Adj_Close"].iloc[-1]
+    else:
+        latest_price = gold_monthly["SIP_Buy_Price"].iloc[-1]
+        
+    current_val_today = gold_monthly["cum_units"].iloc[-1] * latest_price
+    current_drop_pct = ((current_val_today - peak_wealth) / peak_wealth) * 100.0
+    
+    terminal_date = gold_daily["Date"].iloc[-1] if len(gold_daily) > 0 else gold_monthly["SIP_Date"].iloc[-1]
+    annual_return = compute_exact_xirr(gold_monthly["SIP_Date"].tolist(), monthly_sip, terminal_date, current_val_today)
+    
+    return {
+        "ticker": "GOLDBEES.NS",
+        "name": "Nippon India ETF Gold BeES",
+        "total_months": total_months,
+        "total_invested": total_invested,
+        "current_val": current_val_today,
+        "peak_wealth": peak_wealth,
+        "peak_date": peak_date,
+        "current_drop_pct": current_drop_pct,
+        "worst_loss": worst_loss,
+        "worst_date": worst_date,
+        "annual_return": annual_return,
+        "timeline_df": gold_monthly[["SIP_Date", "portfolio_val", "cum_invested", "net_pl"]]
     }
 
 def run_stock_basket_simulation(fact_monthly, fact_daily, selected_tickers, start_year, monthly_sip):
@@ -138,17 +231,21 @@ def run_stock_basket_simulation(fact_monthly, fact_daily, selected_tickers, star
     current_val_today = 0.0
     for t in selected_tickers:
         t_sub = sub[sub["Ticker"] == t]
+        if len(t_sub) == 0:
+            continue
         total_units = (per_stock_sip / t_sub["SIP_Buy_Price"]).sum()
         daily_t = fact_daily[fact_daily["Ticker"] == t].sort_values("Date")
         if len(daily_t) > 0:
             latest_price = daily_t["Adj_Close"].iloc[-1]
-        else:
+        elif len(t_sub) > 0:
             latest_price = t_sub.sort_values("SIP_Date")["SIP_Buy_Price"].iloc[-1]
+        else:
+            latest_price = 0.0
         current_val_today += total_units * latest_price
         
     current_drop_pct = ((current_val_today - peak_wealth) / peak_wealth) * 100.0
-    eff_years = (total_months / 12.0) / 2.0
-    annual_return = ((current_val_today / total_invested) ** (1.0 / eff_years) - 1.0) * 100.0
+    terminal_date = fact_daily["Date"].max()
+    annual_return = compute_exact_xirr(unique_dates, monthly_sip, terminal_date, current_val_today)
     
     return {
         "tickers": selected_tickers,
