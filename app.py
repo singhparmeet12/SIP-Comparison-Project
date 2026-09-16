@@ -131,46 +131,44 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* Bold Hero Investor Hook Card */
+    /* Hero Investor Hook Card */
     .hero-hook-card {
-        background: linear-gradient(135deg, #0F172A 0%, #1A2E4C 100%);
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
         border-radius: var(--radius);
         padding: 1.15rem 1.4rem;
-        color: #FFFFFF;
+        color: var(--text-primary);
         margin-bottom: 1.15rem;
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
-        border-left: 4px solid var(--accent-green);
-        border-right: 4px solid var(--accent-amber);
+        box-shadow: var(--shadow-sm);
     }
     .hero-hook-badge {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        background: rgba(0, 135, 108, 0.25);
-        color: #34D399;
+        background: var(--accent-green-bg);
+        color: var(--accent-green);
         font-size: 0.72rem;
         font-weight: 800;
         letter-spacing: 0.06em;
         text-transform: uppercase;
         padding: 3px 10px;
         border-radius: 9999px;
-        border: 1px solid rgba(52, 211, 153, 0.35);
+        border: 1px solid rgba(5, 150, 105, 0.25);
         margin-bottom: 0.45rem;
     }
     .hero-hook-title {
         font-size: 1.32rem;
         font-weight: 800;
-        color: #FFFFFF;
+        color: var(--text-primary);
         letter-spacing: -0.02em;
         line-height: 1.35;
         margin-bottom: 0.35rem;
     }
     .hero-hook-title .highlight-q {
-        color: #FBBF24;
+        color: var(--accent-blue);
     }
     .hero-hook-sub {
         font-size: 0.84rem;
-        color: #CBD5E1;
+        color: var(--text-secondary);
         line-height: 1.5;
         font-weight: 500;
     }
@@ -594,7 +592,7 @@ st.markdown("""
 </div>
 
 <div class="hero-hook-card">
-    <div class="hero-hook-badge">⚡ HISTORICAL WEALTH COMPARISON (2010 – 2026)</div>
+    <div class="hero-hook-badge">HISTORICAL WEALTH COMPARISON (2010 – 2026)</div>
     <div class="hero-hook-title">
         NIFTY 50 SIP vs Gold BeES vs Your Selected Stocks: <span class="highlight-q">Who Gives the Better Return Over the Years?</span>
     </div>
