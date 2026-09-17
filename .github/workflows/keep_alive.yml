@@ -1,0 +1,74 @@
+name: Keep Streamlit App Awake
+
+on:
+  schedule:
+    # Runs every 6 hours to prevent inactivity hibernation
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allows manual run anytime from GitHub Actions tab
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Playwright & Chromium
+        run: |
+          pip install playwright
+          playwright install chromium --with-deps
+
+      - name: Ping and Wake Streamlit App
+        run: |
+          python -c '
+          import time
+          from playwright.sync_api import sync_playwright
+
+          URL = "https://sip-comparison-project.streamlit.app/"
+
+          print(f"Connecting to {URL}...")
+          with sync_playwright() as p:
+              browser = p.chromium.launch(headless=True)
+              context = browser.new_context(
+                  user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+              )
+              page = context.new_page()
+
+              # Try loading the page with a generous timeout
+              try:
+                  page.goto(URL, timeout=90000, wait_until="domcontentloaded")
+              except Exception as e:
+                  print(f"Navigation note: {e}")
+
+              # Give Streamlit app / wake screen time to render
+              time.sleep(8)
+
+              # Check if the Streamlit sleep modal / wake button is present
+              wake_button = (
+                  page.query_selector("button:has-text(\"Yes, get this app back up!\")")
+                  or page.query_selector("button:has-text(\"Yes, wake it up!\")")
+                  or page.query_selector("button:has-text(\"Wake up\")")
+                  or page.query_selector("button:has-text(\"Wake\")")
+              )
+
+              if wake_button:
+                  print("App was sleeping! Clicking wake button now...")
+                  wake_button.click()
+                  # Wait for container startup
+                  time.sleep(15)
+                  print("Wake command sent successfully!")
+              else:
+                  print("App is already awake and active. Interaction session established.")
+
+              # Interact slightly with the page so Streamlit registers real browser activity
+              try:
+                  page.mouse.wheel(0, 300)
+                  time.sleep(3)
+              except Exception:
+                  pass
+
+              browser.close()
+              print("Keep-alive run finished successfully.")
+          '
